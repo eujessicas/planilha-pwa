@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Meu Caixa</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body><div class="container">
+
+    <header class="header">
+
+        <div>
+            <h1>Meu Caixa</h1>
+            <p>Controle Financeiro</p>
+        </div>
+
+    </header>
+
+    <section class="saldo-card">
+
+        <span>Saldo Atual</span>
+
+        <h2 id="saldo">
+            R$ 0,00
+        </h2>
+
+    </section>
+
+
+    <section class="resumo">
+
+        <div class="card entrada-card">
+
+            <small>Entradas</small>
+
+            <h3 id="totalEntrada">
+                R$ 0,00
+            </h3>
+
+        </div>
+
+        <div class="card saida-card">
+
+            <small>Saídas</small>
+
+            <h3 id="totalSaida">
+                R$ 0,00
+            </h3>
+
+        </div>
+
+    </section>
+
+    <button id="btnExportar" class="exportar">
+    📥 Exportar Planilha
+</button>
+
+
+    <section class="historico">
+
+        <div class="titulo">
+
+            <h2>Histórico</h2>
+
+        </div>
+
+        <div id="lista">
+
+        </div>
+
+    </section>
+
+</div>
+
+<button class="fab">
++
+</button>
+
+<!-- Modal -->
+
+<!-- Modal -->
+
+<div class="modal oculto" id="modal">
+
+    <div class="modal-card">
+
+        <h2>Novo Lançamento</h2>
+
+        <div class="campo">
+
+            <label>Tipo</label>
+
+            <select id="tipo">
+                <option value="entrada">Entrada</option>
+                <option value="saida">Saída</option>
+            </select>
+
+        </div>
+
+
+        <div class="campo">
+
+            <label>Descrição</label>
+
+            <input 
+                type="text" 
+                id="descricao"
+                placeholder="Ex.: Mercado"
+            >
+
+        </div>
+
+
+        <div class="campo">
+
+            <label>Valor</label>
+
+            <input
+                type="number"
+                id="valor"
+                placeholder="0,00"
+                step="0.01"
+            >
+
+        </div>
+
+
+        <div class="acoes">
+
+            <button 
+                type="button" 
+                id="btnCancelar"
+                class="cancelar">
+                Cancelar
+            </button>
+
+
+            <button 
+                type="button" 
+                id="btnSalvar"
+                class="salvar">
+                Salvar
+            </button>
+
+
+        </div>
+
+    </div>
+
+</div>
+<script type="module" src="js/app.js"></script>
+
+</body>
+</html>
