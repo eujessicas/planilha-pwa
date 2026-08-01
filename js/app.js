@@ -4,19 +4,10 @@ let lancamentos = JSON.parse(localStorage.getItem("meuCaixa")) || [];
 // ===== Filtros =====
 let mesAtual = new Date().toISOString().slice(0, 7);
 let categoriaAtual = "Todas";
+let tipoSelecionado = "entrada";
 
 // ===== Elementos =====
 const categoria = document.getElementById("categoria");
-const filtroCategoria = document.getElementById("filtroCategoria");
-const mesFiltro = document.getElementById("mesFiltro");
-
-const btnExportar = document.getElementById("btnExportar");
-const modal = document.getElementById("modal");
-const fab = document.querySelector(".fab");
-const btnSalvar = document.getElementById("btnSalvar");
-const btnCancelar = document.getElementById("btnCancelar");
-
-const tipo = document.getElementById("tipo");
 const descricao = document.getElementById("descricao");
 const valor = document.getElementById("valor");
 
@@ -25,14 +16,31 @@ const totalEntrada = document.getElementById("totalEntrada");
 const totalSaida = document.getElementById("totalSaida");
 const lista = document.getElementById("lista");
 
-// ===== Inicializa filtro =====
+const modal = document.getElementById("modal");
+const fab = document.querySelector(".fab");
+
+const btnSalvar = document.getElementById("btnSalvar");
+const btnFechar = document.getElementById("btnFechar");
+
+const btnEntrada = document.getElementById("btnEntrada");
+const btnSaida = document.getElementById("btnSaida");
+
+const btnExportar = document.getElementById("btnExportar");
+
+const mesFiltro = document.getElementById("mesFiltro");
+const filtroCategoria = document.getElementById("filtroCategoria");
+
+// ===== Inicialização =====
 mesFiltro.value = mesAtual;
 
 // ===== Eventos =====
-btnExportar.addEventListener("click", exportarDados);
 fab.addEventListener("click", abrirModal);
-btnCancelar.addEventListener("click", fecharModal);
+
+btnFechar.addEventListener("click", fecharModal);
+
 btnSalvar.addEventListener("click", salvarLancamento);
+
+btnExportar.addEventListener("click", exportarDados);
 
 mesFiltro.addEventListener("change", () => {
     mesAtual = mesFiltro.value;
@@ -44,42 +52,69 @@ filtroCategoria.addEventListener("change", () => {
     atualizarTela();
 });
 
+btnEntrada.addEventListener("click", () => {
+
+    tipoSelecionado = "entrada";
+
+    btnEntrada.classList.add("ativo");
+    btnSaida.classList.remove("ativo");
+
+});
+
+btnSaida.addEventListener("click", () => {
+
+    tipoSelecionado = "saida";
+
+    btnSaida.classList.add("ativo");
+    btnEntrada.classList.remove("ativo");
+
+});
+
 // ===== Modal =====
 
-function abrirModal() {
+function abrirModal(){
+
     modal.classList.remove("oculto");
+
 }
 
-function fecharModal() {
+function fecharModal(){
 
     modal.classList.add("oculto");
 
     categoria.selectedIndex = 0;
     descricao.value = "";
     valor.value = "";
-    tipo.value = "entrada";
+
+    tipoSelecionado = "entrada";
+
+    btnEntrada.classList.add("ativo");
+    btnSaida.classList.remove("ativo");
+
 }
 
 // ===== Salvar =====
 
-function salvarLancamento() {
+function salvarLancamento(){
 
-    if (
-        categoria.value.trim() === "" ||
-        descricao.value.trim() === "" ||
-        valor.value === ""
-    ) {
+    if(
+        descricao.value.trim()==="" ||
+        valor.value===""
+    ){
+
         alert("Preencha todos os campos.");
+
         return;
+
     }
 
     const agora = new Date();
 
-    lancamentos.push({
+    const novoLancamento = {
 
         id: Date.now(),
 
-        tipo: tipo.value,
+        tipo: tipoSelecionado,
 
         categoria: categoria.value,
 
@@ -89,45 +124,58 @@ function salvarLancamento() {
 
         data: agora.toLocaleDateString("pt-BR"),
 
-        mes: agora.toISOString().slice(0, 7)
+        mes: agora.toISOString().slice(0,7)
 
-    });
+    };
+
+    lancamentos.push(novoLancamento);
 
     salvarLocalStorage();
 
     atualizarTela();
 
     fecharModal();
+
 }
 
 // ===== Atualizar Tela =====
 
-function atualizarTela() {
+function atualizarTela(){
 
-    lista.innerHTML = "";
+    lista.innerHTML="";
 
-    let entradas = 0;
-    let saidas = 0;
+    let entradas=0;
+    let saidas=0;
 
-    let dados = lancamentos.filter(item => item.mes === mesAtual);
+    let dados=lancamentos.filter(item=>item.mes===mesAtual);
 
-    if (categoriaAtual !== "Todas") {
-        dados = dados.filter(item => item.categoria === categoriaAtual);
+    if(categoriaAtual!=="Todas"){
+
+        dados=dados.filter(
+            item=>item.categoria===categoriaAtual
+        );
+
     }
 
-    if (dados.length === 0) {
-        lista.innerHTML = "<p>Nenhum lançamento encontrado.</p>";
+    if(dados.length===0){
+
+        lista.innerHTML="<p>Nenhum lançamento encontrado.</p>";
+
     }
 
-    dados.forEach(item => {
+    dados.forEach(item=>{
 
-        if (item.tipo === "entrada") {
-            entradas += item.valor;
-        } else {
-            saidas += item.valor;
+        if(item.tipo==="entrada"){
+
+            entradas+=item.valor;
+
+        }else{
+
+            saidas+=item.valor;
+
         }
 
-        lista.innerHTML += `
+        lista.innerHTML+=`
 
         <div class="item">
 
@@ -141,13 +189,21 @@ function atualizarTela() {
 
             <div class="acoes-item">
 
-                <div class="${item.tipo === "entrada" ? "valor-entrada" : "valor-saida"}">
+                <div class="${
+                    item.tipo==="entrada"
+                    ? "valor-entrada"
+                    : "valor-saida"
+                }">
 
-                    ${item.tipo === "entrada" ? "+" : "-"}
+                    ${
+                        item.tipo==="entrada"
+                        ? "+"
+                        : "-"
+                    }
 
-                    ${item.valor.toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL"
+                    ${item.valor.toLocaleString("pt-BR",{
+                        style:"currency",
+                        currency:"BRL"
                     })}
 
                 </div>
@@ -163,97 +219,123 @@ function atualizarTela() {
         </div>
 
         `;
+
     });
 
-    document.querySelectorAll(".btnExcluir").forEach(botao => {
+    document.querySelectorAll(".btnExcluir").forEach(botao=>{
 
-        botao.addEventListener("click", () => {
+        botao.addEventListener("click",()=>{
 
-            excluirLancamento(Number(botao.dataset.id));
+            excluirLancamento(
+                Number(botao.dataset.id)
+            );
 
         });
 
     });
 
-    saldo.textContent = (entradas - saidas).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
+    saldo.textContent=(entradas-saidas).toLocaleString("pt-BR",{
+
+        style:"currency",
+        currency:"BRL"
+
     });
 
-    totalEntrada.textContent = entradas.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
+    totalEntrada.textContent=entradas.toLocaleString("pt-BR",{
+
+        style:"currency",
+        currency:"BRL"
+
     });
 
-    totalSaida.textContent = saidas.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
+    totalSaida.textContent=saidas.toLocaleString("pt-BR",{
+
+        style:"currency",
+        currency:"BRL"
+
     });
+
 }
 
 // ===== Exportar =====
 
-function exportarDados() {
+function exportarDados(){
 
-    let dados = lancamentos.filter(item => item.mes === mesAtual);
+    let dados=lancamentos.filter(item=>item.mes===mesAtual);
 
-    if (categoriaAtual !== "Todas") {
-        dados = dados.filter(item => item.categoria === categoriaAtual);
+    if(categoriaAtual!=="Todas"){
+
+        dados=dados.filter(
+            item=>item.categoria===categoriaAtual
+        );
+
     }
 
-    if (dados.length === 0) {
+    if(dados.length===0){
+
         alert("Não existem lançamentos.");
+
         return;
+
     }
 
-    let csv = "Data;Tipo;Categoria;Descrição;Valor\n";
+    let csv="Data;Tipo;Categoria;Descrição;Valor\n";
 
-    dados.forEach(item => {
+    dados.forEach(item=>{
 
-        csv += `${item.data};`;
-        csv += `${item.tipo};`;
-        csv += `${item.categoria};`;
-        csv += `${item.descricao};`;
-        csv += `${item.valor.toFixed(2)}\n`;
+        csv+=`${item.data};`;
+        csv+=`${item.tipo};`;
+        csv+=`${item.categoria};`;
+        csv+=`${item.descricao};`;
+        csv+=`${item.valor.toFixed(2)}\n`;
 
     });
 
-    const arquivo = new Blob([csv], {
-        type: "text/csv;charset=utf-8;"
+    const arquivo=new Blob([csv],{
+
+        type:"text/csv;charset=utf-8;"
+
     });
 
-    const link = document.createElement("a");
+    const link=document.createElement("a");
 
-    link.href = URL.createObjectURL(arquivo);
+    link.href=URL.createObjectURL(arquivo);
 
-    link.download = `meu-caixa-${mesAtual}.csv`;
+    link.download=`meu-caixa-${mesAtual}.csv`;
 
     link.click();
+
 }
 
 // ===== Excluir =====
 
-function excluirLancamento(id) {
+function excluirLancamento(id){
 
-    if (!confirm("Deseja excluir este lançamento?")) return;
+    if(!confirm("Deseja excluir este lançamento?")){
 
-    lancamentos = lancamentos.filter(item => item.id !== id);
+        return;
+
+    }
+
+    lancamentos=lancamentos.filter(item=>item.id!==id);
 
     salvarLocalStorage();
 
     atualizarTela();
+
 }
 
 // ===== LocalStorage =====
 
-function salvarLocalStorage() {
+function salvarLocalStorage(){
 
     localStorage.setItem(
         "meuCaixa",
         JSON.stringify(lancamentos)
     );
+
 }
 
-// ===== Inicialização =====
+// ===== Iniciar =====
 
 atualizarTela();

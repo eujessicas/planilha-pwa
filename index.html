@@ -1,256 +1,491 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
     <meta charset="UTF-8">
-    
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Meu Caixa</title>
 
+
     <link rel="stylesheet" href="css/style.css">
+
     <link rel="manifest" href="manifest.json">
+
 
     <meta name="theme-color" content="#6C63FF">
 
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 
 </head>
 
-<body><div class="container">
 
-    <header class="header">
+<body>
 
-        <div>
-            <h1>Meu Caixa</h1>
-            <p>Controle Financeiro</p>
-        </div>
 
-    </header>
+<div class="container">
 
-    <section class="saldo-card">
 
-        <span>Saldo Atual</span>
+<header class="header">
 
-        <h2 id="saldo">
-            R$ 0,00
-        </h2>
+    <h1>Meu Caixa</h1>
 
-        <div class="filtro-mes">
+    <p>Controle Financeiro</p>
 
-    <label>
-        📅 Mês
-    </label>
+</header>
 
-    <input 
-        type="month"
-        id="mesFiltro"
-    >
-    
 
-</div>
 
-    </section>
+<section class="saldo-card">
 
 
-    <section class="resumo">
+    <span>Saldo Atual</span>
 
-        <div class="card entrada-card">
 
-            <small>Entradas</small>
+    <h2 id="saldo">
+        R$ 0,00
+    </h2>
 
-            <h3 id="totalEntrada">
-                R$ 0,00
-            </h3>
 
-        </div>
+    <div class="filtro-mes">
 
-        <div class="card saida-card">
 
-            <small>Saídas</small>
+        <label>📅 Mês</label>
 
-            <h3 id="totalSaida">
-                R$ 0,00
-            </h3>
 
-        </div>
+        <input 
+            type="month"
+            id="mesFiltro">
 
-    </section>
-
-    <button id="btnExportar" class="exportar">
-    📥 Exportar Planilha
-</button>
-
-<div class="filtro-categoria">
-
-    <label>📂 Exibir</label>
-
-    <select id="filtroCategoria">
-
-        <option value="Todas">Todas</option>
-        <option value="💰 Salário">💰 Salário</option>
-        <option value="💵 Extra">💵 Extra</option>
-        <option value="📈 Investimentos">📈 Investimentos</option>
-        <option value="🛒 Mercado">🛒 Mercado</option>
-        <option value="🍔 Alimentação">🍔 Alimentação</option>
-        <option value="🚗 Transporte">🚗 Transporte</option>
-        <option value="🏍️ Moto">🏍️ Moto</option>
-        <option value="🏠 Casa">🏠 Casa</option>
-        <option value="🎮 Lazer">🎮 Lazer</option>
-        <option value="💊 Saúde">💊 Saúde</option>
-        <option value="📚 Educação">📚 Educação</option>
-
-    </select>
-
-</div>
-
-        
-    <section class="historico">
-
-        <div class="titulo">
-
-            <h2>Histórico</h2>
-
-        </div>
-
-        <div id="lista">
-
-        </div>
-
-    </section>
-
-</div>
-
-<button class="fab">
-+
-</button>
-
-<!-- Modal -->
-
-<!-- Modal -->
-
-<div class="modal oculto" id="modal">
-
-    <div class="modal-card">
-
-        <h2>Novo Lançamento</h2>
-
-        <div class="campo">
-
-            <label>Tipo</label>
-
-            <select id="tipo">
-                <option value="entrada">Entrada</option>
-                <option value="saida">Saída</option>
-            </select>
-
-        </div>
-        <div class="campo">
-
-    <label>Título / Categoria</label>
-
-    <select id="categoria">
-
-        <option value="💵 Extra">
-         💵 Extra
-    </option>
-
-    <option value="💰 Salário">
-        💰 Salário
-    </option>
-    
-    <option value="📈 Investimentos">
-         📈 Investimentos
-    </option>
-
-    <option value="🛒 Mercado">
-        🛒 Mercado
-    </option>
-
-    <option value="🍔 Alimentação">
-        🍔 Alimentação
-    </option>
-
-    <option value="🚗 Transporte">
-        🚗 Transporte
-    </option>
-
-    <option value="🏍️ Moto">
-        🏍️ Moto
-    </option>
-
-    <option value="🏠 Casa">
-        🏠 Casa
-    </option>
-
-    <option value="🎮 Lazer">
-        🎮 Lazer
-    </option>
-
-    <option value="💊 Saúde">
-        💊 Saúde
-    </option>
-
-    <option value="📚 Educação">
-        📚 Educação
-    </option>
-
-</select>
-
-</div>
-
-
-        <div class="campo">
-
-            <label>Descrição</label>
-
-            <input 
-                type="text" 
-                id="descricao"
-                placeholder="Ex.: Escreva aqui detalhes do item"
-            >
-
-        </div>
-
-
-        <div class="campo">
-
-            <label>Valor</label>
-
-            <input
-                type="number"
-                id="valor"
-                placeholder="0,00"
-                step="0.01"
-            >
-
-        </div>
-
-
-        <div class="acoes">
-
-            <button 
-                type="button" 
-                id="btnCancelar"
-                class="cancelar">
-                Cancelar
-            </button>
-
-
-            <button 
-                type="button" 
-                id="btnSalvar"
-                class="salvar">
-                Salvar
-            </button>
-
-
-        </div>
 
     </div>
 
+
+</section>
+
+
+
+
+<section class="resumo">
+
+
+<div class="card entrada-card">
+
+    <small>Entradas</small>
+
+    <h3 id="totalEntrada">
+        R$ 0,00
+    </h3>
+
 </div>
-<script type="module" src="js/app.js"></script>
+
+
+
+<div class="card saida-card">
+
+    <small>Saídas</small>
+
+    <h3 id="totalSaida">
+        R$ 0,00
+    </h3>
+
+</div>
+
+
+</section>
+
+
+
+
+<button
+    type="button"
+    id="btnExportar"
+    class="exportar">
+
+    📥 Exportar Planilha
+
+</button>
+
+
+
+
+<div class="filtro-categoria">
+
+
+<label>
+    📂 Exibir
+</label>
+
+
+
+<select id="filtroCategoria">
+
+
+<option value="Todas">
+    Todas
+</option>
+
+
+<option value="💰 Salário">
+    💰 Salário
+</option>
+
+
+<option value="💵 Extra">
+    💵 Extra
+</option>
+
+
+<option value="📈 Investimentos">
+    📈 Investimentos
+</option>
+
+
+<option value="🛒 Mercado">
+    🛒 Mercado
+</option>
+
+
+<option value="🍔 Alimentação">
+    🍔 Alimentação
+</option>
+
+
+<option value="🚗 Transporte">
+    🚗 Transporte
+</option>
+
+
+<option value="🏍️ Moto">
+    🏍️ Moto
+</option>
+
+
+<option value="🏠 Casa">
+    🏠 Casa
+</option>
+
+
+<option value="🎮 Lazer">
+    🎮 Lazer
+</option>
+
+
+<option value="💊 Saúde">
+    💊 Saúde
+</option>
+
+
+<option value="📚 Educação">
+    📚 Educação
+</option>
+
+
+</select>
+
+
+</div>
+
+
+
+
+
+<section class="historico">
+
+
+<div class="titulo">
+
+<h2>Histórico</h2>
+
+</div>
+
+
+
+<div id="lista"></div>
+
+
+
+</section>
+
+
+
+</div>
+
+
+
+
+
+
+<button 
+    type="button"
+    class="fab">
+
+    +
+
+</button>
+
+
+
+
+
+
+
+<!-- MODAL -->
+
+
+<div 
+    class="modal oculto"
+    id="modal">
+
+
+
+<div class="modal-card">
+
+
+
+<div class="modal-topo">
+
+
+<h2>
+    Novo Lançamento
+</h2>
+
+
+
+<button
+    type="button"
+    id="btnFechar"
+    class="btnFechar">
+
+    ✕
+
+</button>
+
+
+</div>
+
+
+
+
+
+<div class="campo">
+
+
+<label>
+    Tipo
+</label>
+
+
+
+<div class="tipo-botoes">
+
+
+
+<button
+    type="button"
+    id="btnEntrada"
+    class="tipo ativo">
+
+    🟢 Entrada
+
+</button>
+
+
+
+
+<button
+    type="button"
+    id="btnSaida"
+    class="tipo">
+
+    🔴 Saída
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<div class="campo">
+
+
+<label>
+    📂 Categoria
+</label>
+
+
+
+<select id="categoria">
+
+
+<option value="💰 Salário">
+    💰 Salário
+</option>
+
+
+<option value="💵 Extra">
+    💵 Extra
+</option>
+
+
+<option value="📈 Investimentos">
+    📈 Investimentos
+</option>
+
+
+<option value="🛒 Mercado">
+    🛒 Mercado
+</option>
+
+
+<option value="🍔 Alimentação">
+    🍔 Alimentação
+</option>
+
+
+<option value="🚗 Transporte">
+    🚗 Transporte
+</option>
+
+
+<option value="🏍️ Moto">
+    🏍️ Moto
+</option>
+
+
+<option value="🏠 Casa">
+    🏠 Casa
+</option>
+
+
+<option value="🎮 Lazer">
+    🎮 Lazer
+</option>
+
+
+<option value="💊 Saúde">
+    💊 Saúde
+</option>
+
+
+<option value="📚 Educação">
+    📚 Educação
+</option>
+
+
+
+</select>
+
+
+</div>
+
+
+
+
+
+
+<div class="campo">
+
+
+<label>
+    📝 Descrição
+</label>
+
+
+<input
+    type="text"
+    id="descricao"
+    placeholder="Ex.: Mercado do mês">
+
+
+</div>
+
+
+
+
+
+
+
+<div class="campo">
+
+
+<label>
+    💰 Valor
+</label>
+
+
+
+<input
+
+    type="number"
+
+    id="valor"
+
+    class="valor-grande"
+
+    placeholder="0,00"
+
+    step="0.01">
+
+
+</div>
+
+
+
+
+
+
+
+<button
+
+    type="button"
+
+    id="btnSalvar"
+
+    class="salvar">
+
+
+💾 Salvar Lançamento
+
+
+</button>
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<script 
+    type="module"
+    src="js/app.js">
+
+</script>
+
 
 </body>
-</html>
+
+</html> 
