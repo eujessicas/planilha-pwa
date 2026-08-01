@@ -399,3 +399,75 @@ button:hover{
     width:100%;
 
 }
+/* ===========================
+   FILTROS
+=========================== */
+
+.filtro-mes,
+.filtro-categoria{
+
+    margin-top:18px;
+
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+
+}
+
+.filtro-mes label,
+.filtro-categoria label{
+
+    font-size:14px;
+    font-weight:600;
+    color:white;
+
+}
+
+.filtro-categoria label{
+
+    color:#475569;
+
+}
+
+.filtro-mes input,
+.filtro-categoria select{
+
+    width:100%;
+
+    padding:12px 14px;
+
+    border:none;
+
+    border-radius:12px;
+
+    font-family:"Poppins",sans-serif;
+
+    font-size:15px;
+
+    outline:none;
+
+}
+
+.filtro-categoria{
+
+    margin:20px 0;
+
+}
+
+.filtro-categoria select{
+
+    border:1px solid #CBD5E1;
+
+    background:white;
+
+    transition:.2s;
+
+}
+
+.filtro-categoria select:focus{
+
+    border-color:#6C63FF;
+
+    box-shadow:0 0 0 4px rgba(108,99,255,.15);
+
+}

@@ -1,448 +1,259 @@
 // ===== Dados =====
-
 let lancamentos = JSON.parse(localStorage.getItem("meuCaixa")) || [];
 
+// ===== Filtros =====
+let mesAtual = new Date().toISOString().slice(0, 7);
+let categoriaAtual = "Todas";
 
 // ===== Elementos =====
-
 const categoria = document.getElementById("categoria");
+const filtroCategoria = document.getElementById("filtroCategoria");
+const mesFiltro = document.getElementById("mesFiltro");
 
 const btnExportar = document.getElementById("btnExportar");
-
 const modal = document.getElementById("modal");
-
 const fab = document.querySelector(".fab");
-
 const btnSalvar = document.getElementById("btnSalvar");
-
 const btnCancelar = document.getElementById("btnCancelar");
 
-
 const tipo = document.getElementById("tipo");
-
 const descricao = document.getElementById("descricao");
-
 const valor = document.getElementById("valor");
 
-
 const saldo = document.getElementById("saldo");
-
 const totalEntrada = document.getElementById("totalEntrada");
-
 const totalSaida = document.getElementById("totalSaida");
-
 const lista = document.getElementById("lista");
 
-
+// ===== Inicializa filtro =====
+mesFiltro.value = mesAtual;
 
 // ===== Eventos =====
-
-if(btnExportar){
-    btnExportar.addEventListener("click", exportarDados);
-}
-
-
+btnExportar.addEventListener("click", exportarDados);
 fab.addEventListener("click", abrirModal);
-
 btnCancelar.addEventListener("click", fecharModal);
-
 btnSalvar.addEventListener("click", salvarLancamento);
 
+mesFiltro.addEventListener("change", () => {
+    mesAtual = mesFiltro.value;
+    atualizarTela();
+});
 
+filtroCategoria.addEventListener("change", () => {
+    categoriaAtual = filtroCategoria.value;
+    atualizarTela();
+});
 
-// ===== Abrir Modal =====
+// ===== Modal =====
 
-function abrirModal(){
-
+function abrirModal() {
     modal.classList.remove("oculto");
-
 }
 
-
-
-// ===== Fechar Modal =====
-
-function fecharModal(){
+function fecharModal() {
 
     modal.classList.add("oculto");
 
-    categoria.value = "";
-
+    categoria.selectedIndex = 0;
     descricao.value = "";
-
     valor.value = "";
-
     tipo.value = "entrada";
-
 }
 
+// ===== Salvar =====
 
+function salvarLancamento() {
 
-// ===== Salvar lançamento =====
-
-function salvarLancamento(){
-
-
-    if(
+    if (
         categoria.value.trim() === "" ||
         descricao.value.trim() === "" ||
         valor.value === ""
-    ){
-
+    ) {
         alert("Preencha todos os campos.");
-
         return;
-
     }
 
+    const agora = new Date();
 
-
-    const novoLancamento = {
-
+    lancamentos.push({
 
         id: Date.now(),
 
-
         tipo: tipo.value,
-
 
         categoria: categoria.value,
 
-
         descricao: descricao.value,
-
 
         valor: Number(valor.value),
 
+        data: agora.toLocaleDateString("pt-BR"),
 
-        data: new Date().toLocaleDateString("pt-BR")
-
-
-    };
-
-
-
-    lancamentos.push(novoLancamento);
-
-
-
-    salvarLocalStorage();
-
-
-
-    atualizarTela();
-
-
-
-    fecharModal();
-
-
-}
-
-
-
-
-// ===== Exportar CSV =====
-
-function exportarDados(){
-
-
-    if(lancamentos.length === 0){
-
-        alert("Não existem lançamentos para exportar.");
-
-        return;
-
-    }
-
-
-
-    let csv = "Data;Tipo;Categoria;Descrição;Valor\n";
-
-
-
-    lancamentos.forEach(item => {
-
-
-        csv += `${item.data};`;
-
-        csv += `${item.tipo};`;
-
-        csv += `${item.categoria || ""};`;
-
-        csv += `${item.descricao};`;
-
-        csv += `${item.valor.toFixed(2)}\n`;
-
+        mes: agora.toISOString().slice(0, 7)
 
     });
 
+    salvarLocalStorage();
 
+    atualizarTela();
 
-    const arquivo = new Blob(
-
-        [csv],
-
-        {
-            type:"text/csv;charset=utf-8;"
-        }
-
-    );
-
-
-
-    const link = document.createElement("a");
-
-
-    link.href = URL.createObjectURL(arquivo);
-
-
-    link.download = "meu-caixa.csv";
-
-
-    link.click();
-
-
+    fecharModal();
 }
 
+// ===== Atualizar Tela =====
 
-
-
-// ===== Atualizar tela =====
-
-function atualizarTela(){
-
+function atualizarTela() {
 
     lista.innerHTML = "";
 
-
-
     let entradas = 0;
-
     let saidas = 0;
 
+    let dados = lancamentos.filter(item => item.mes === mesAtual);
 
-
-
-    if(lancamentos.length === 0){
-
-        lista.innerHTML = "<p>Nenhum lançamento.</p>";
-
+    if (categoriaAtual !== "Todas") {
+        dados = dados.filter(item => item.categoria === categoriaAtual);
     }
 
+    if (dados.length === 0) {
+        lista.innerHTML = "<p>Nenhum lançamento encontrado.</p>";
+    }
 
+    dados.forEach(item => {
 
-    lancamentos.forEach(item => {
-
-
-
-        if(item.tipo === "entrada"){
-
+        if (item.tipo === "entrada") {
             entradas += item.valor;
-
-        }else{
-
+        } else {
             saidas += item.valor;
-
         }
-
-
-
 
         lista.innerHTML += `
 
-
         <div class="item">
-
 
             <div>
 
+                <h4>${item.categoria}</h4>
 
-                <h4>
-                    ${item.categoria || "Sem categoria"}
-                </h4>
-
-
-                <small>
-                    ${item.descricao} • ${item.data}
-                </small>
-
+                <small>${item.descricao} • ${item.data}</small>
 
             </div>
-
-
-
 
             <div class="acoes-item">
 
+                <div class="${item.tipo === "entrada" ? "valor-entrada" : "valor-saida"}">
 
-                <div class="${
-                    item.tipo === "entrada"
-                    ? "valor-entrada"
-                    : "valor-saida"
-                }">
+                    ${item.tipo === "entrada" ? "+" : "-"}
 
-
-                    ${
-                        item.tipo === "entrada"
-                        ? "+"
-                        : "-"
-                    }
-
-
-                    ${item.valor.toLocaleString("pt-BR",{
-
-                        style:"currency",
-
-                        currency:"BRL"
-
+                    ${item.valor.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL"
                     })}
-
 
                 </div>
 
-
-
-
-                <button 
+                <button
                     class="btnExcluir"
                     data-id="${item.id}">
-
                     🗑️
-
                 </button>
-
-
 
             </div>
 
-
-
         </div>
 
-
         `;
-
-
-
     });
 
+    document.querySelectorAll(".btnExcluir").forEach(botao => {
 
+        botao.addEventListener("click", () => {
 
-
-    document.querySelectorAll(".btnExcluir")
-    .forEach(botao => {
-
-
-        botao.addEventListener("click",()=>{
-
-
-            const id = Number(botao.dataset.id);
-
-
-            excluirLancamento(id);
-
+            excluirLancamento(Number(botao.dataset.id));
 
         });
 
-
-
     });
 
-
-
-
-
-    saldo.textContent = 
-    (entradas - saidas).toLocaleString("pt-BR",{
-
-        style:"currency",
-
-        currency:"BRL"
-
+    saldo.textContent = (entradas - saidas).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
     });
 
-
-
-
-    totalEntrada.textContent = 
-    entradas.toLocaleString("pt-BR",{
-
-        style:"currency",
-
-        currency:"BRL"
-
+    totalEntrada.textContent = entradas.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
     });
 
-
-
-
-    totalSaida.textContent = 
-    saidas.toLocaleString("pt-BR",{
-
-        style:"currency",
-
-        currency:"BRL"
-
+    totalSaida.textContent = saidas.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
     });
-
-
-
 }
 
+// ===== Exportar =====
 
+function exportarDados() {
 
+    let dados = lancamentos.filter(item => item.mes === mesAtual);
+
+    if (categoriaAtual !== "Todas") {
+        dados = dados.filter(item => item.categoria === categoriaAtual);
+    }
+
+    if (dados.length === 0) {
+        alert("Não existem lançamentos.");
+        return;
+    }
+
+    let csv = "Data;Tipo;Categoria;Descrição;Valor\n";
+
+    dados.forEach(item => {
+
+        csv += `${item.data};`;
+        csv += `${item.tipo};`;
+        csv += `${item.categoria};`;
+        csv += `${item.descricao};`;
+        csv += `${item.valor.toFixed(2)}\n`;
+
+    });
+
+    const arquivo = new Blob([csv], {
+        type: "text/csv;charset=utf-8;"
+    });
+
+    const link = document.createElement("a");
+
+    link.href = URL.createObjectURL(arquivo);
+
+    link.download = `meu-caixa-${mesAtual}.csv`;
+
+    link.click();
+}
 
 // ===== Excluir =====
 
-function excluirLancamento(id){
+function excluirLancamento(id) {
 
+    if (!confirm("Deseja excluir este lançamento?")) return;
 
-    const confirmar = confirm(
-        "Deseja excluir este lançamento?"
-    );
-
-
-
-    if(!confirmar){
-
-        return;
-
-    }
-
-
-
-    lancamentos = lancamentos.filter(
-        item => item.id !== id
-    );
-
-
+    lancamentos = lancamentos.filter(item => item.id !== id);
 
     salvarLocalStorage();
 
-
-
     atualizarTela();
-
-
 }
 
+// ===== LocalStorage =====
 
-
-
-// ===== Salvar dados =====
-
-function salvarLocalStorage(){
+function salvarLocalStorage() {
 
     localStorage.setItem(
         "meuCaixa",
         JSON.stringify(lancamentos)
     );
-
 }
 
-
-
-// ===== Iniciar =====
+// ===== Inicialização =====
 
 atualizarTela();
