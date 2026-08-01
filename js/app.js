@@ -1,26 +1,46 @@
 // ===== Dados =====
+
 let lancamentos = JSON.parse(localStorage.getItem("meuCaixa")) || [];
 
 
 // ===== Elementos =====
+
+const categoria = document.getElementById("categoria");
+
 const btnExportar = document.getElementById("btnExportar");
+
 const modal = document.getElementById("modal");
+
 const fab = document.querySelector(".fab");
+
 const btnSalvar = document.getElementById("btnSalvar");
+
 const btnCancelar = document.getElementById("btnCancelar");
 
+
 const tipo = document.getElementById("tipo");
+
 const descricao = document.getElementById("descricao");
+
 const valor = document.getElementById("valor");
 
+
 const saldo = document.getElementById("saldo");
+
 const totalEntrada = document.getElementById("totalEntrada");
+
 const totalSaida = document.getElementById("totalSaida");
+
 const lista = document.getElementById("lista");
 
 
+
 // ===== Eventos =====
-btnExportar.addEventListener("click", exportarDados);
+
+if(btnExportar){
+    btnExportar.addEventListener("click", exportarDados);
+}
+
 
 fab.addEventListener("click", abrirModal);
 
@@ -29,75 +49,116 @@ btnCancelar.addEventListener("click", fecharModal);
 btnSalvar.addEventListener("click", salvarLancamento);
 
 
-// ===== Funções =====
 
-function abrirModal() {
+// ===== Abrir Modal =====
+
+function abrirModal(){
+
     modal.classList.remove("oculto");
+
 }
 
 
-function fecharModal() {
+
+// ===== Fechar Modal =====
+
+function fecharModal(){
 
     modal.classList.add("oculto");
 
+    categoria.value = "";
+
     descricao.value = "";
+
     valor.value = "";
+
     tipo.value = "entrada";
 
 }
 
 
 
-function salvarLancamento() {
+// ===== Salvar lançamento =====
+
+function salvarLancamento(){
 
 
-    if (descricao.value.trim() === "" || valor.value === "") {
+    if(
+        categoria.value.trim() === "" ||
+        descricao.value.trim() === "" ||
+        valor.value === ""
+    ){
 
         alert("Preencha todos os campos.");
 
         return;
+
     }
+
 
 
     const novoLancamento = {
 
+
         id: Date.now(),
+
 
         tipo: tipo.value,
 
+
+        categoria: categoria.value,
+
+
         descricao: descricao.value,
+
 
         valor: Number(valor.value),
 
+
         data: new Date().toLocaleDateString("pt-BR")
 
+
     };
+
 
 
     lancamentos.push(novoLancamento);
 
 
+
     salvarLocalStorage();
+
 
 
     atualizarTela();
 
 
+
     fecharModal();
+
 
 }
 
+
+
+
+// ===== Exportar CSV =====
+
 function exportarDados(){
+
 
     if(lancamentos.length === 0){
 
         alert("Não existem lançamentos para exportar.");
 
         return;
+
     }
 
 
-    let csv = "Data;Tipo;Descrição;Valor\n";
+
+    let csv = "Data;Tipo;Categoria;Descrição;Valor\n";
+
 
 
     lancamentos.forEach(item => {
@@ -106,6 +167,8 @@ function exportarDados(){
         csv += `${item.data};`;
 
         csv += `${item.tipo};`;
+
+        csv += `${item.categoria || ""};`;
 
         csv += `${item.descricao};`;
 
@@ -117,11 +180,15 @@ function exportarDados(){
 
 
     const arquivo = new Blob(
+
         [csv],
+
         {
             type:"text/csv;charset=utf-8;"
         }
+
     );
+
 
 
     const link = document.createElement("a");
@@ -135,13 +202,19 @@ function exportarDados(){
 
     link.click();
 
+
 }
 
 
-function atualizarTela() {
+
+
+// ===== Atualizar tela =====
+
+function atualizarTela(){
 
 
     lista.innerHTML = "";
+
 
 
     let entradas = 0;
@@ -150,7 +223,8 @@ function atualizarTela() {
 
 
 
-    if (lancamentos.length === 0) {
+
+    if(lancamentos.length === 0){
 
         lista.innerHTML = "<p>Nenhum lançamento.</p>";
 
@@ -162,11 +236,11 @@ function atualizarTela() {
 
 
 
-        if (item.tipo === "entrada") {
+        if(item.tipo === "entrada"){
 
             entradas += item.valor;
 
-        } else {
+        }else{
 
             saidas += item.valor;
 
@@ -174,61 +248,93 @@ function atualizarTela() {
 
 
 
+
         lista.innerHTML += `
 
-            <div class="item">
+
+        <div class="item">
 
 
-                <div>
-
-                    <h4>${item.descricao}</h4>
-
-                    <small>${item.data}</small>
-
-                </div>
+            <div>
 
 
-
-                <div class="acoes-item">
-
-
-                    <div class="${item.tipo === "entrada" ? "valor-entrada" : "valor-saida"}">
-
-                        ${item.tipo === "entrada" ? "+" : "-"}
-
-                        ${item.valor.toLocaleString("pt-BR", {
-                            style:"currency",
-                            currency:"BRL"
-                        })}
-
-                    </div>
+                <h4>
+                    ${item.categoria || "Sem categoria"}
+                </h4>
 
 
-
-                    <button 
-                        class="btnExcluir"
-                        data-id="${item.id}">
-                        🗑️
-                    </button>
-
-
-                </div>
+                <small>
+                    ${item.descricao} • ${item.data}
+                </small>
 
 
             </div>
 
+
+
+
+            <div class="acoes-item">
+
+
+                <div class="${
+                    item.tipo === "entrada"
+                    ? "valor-entrada"
+                    : "valor-saida"
+                }">
+
+
+                    ${
+                        item.tipo === "entrada"
+                        ? "+"
+                        : "-"
+                    }
+
+
+                    ${item.valor.toLocaleString("pt-BR",{
+
+                        style:"currency",
+
+                        currency:"BRL"
+
+                    })}
+
+
+                </div>
+
+
+
+
+                <button 
+                    class="btnExcluir"
+                    data-id="${item.id}">
+
+                    🗑️
+
+                </button>
+
+
+
+            </div>
+
+
+
+        </div>
+
+
         `;
+
+
 
     });
 
 
 
-    // Eventos dos botões excluir
 
-    document.querySelectorAll(".btnExcluir").forEach(botao => {
+    document.querySelectorAll(".btnExcluir")
+    .forEach(botao => {
 
 
-        botao.addEventListener("click", () => {
+        botao.addEventListener("click",()=>{
 
 
             const id = Number(botao.dataset.id);
@@ -240,12 +346,15 @@ function atualizarTela() {
         });
 
 
+
     });
 
 
 
 
-    saldo.textContent = (entradas - saidas).toLocaleString("pt-BR", {
+
+    saldo.textContent = 
+    (entradas - saidas).toLocaleString("pt-BR",{
 
         style:"currency",
 
@@ -255,7 +364,9 @@ function atualizarTela() {
 
 
 
-    totalEntrada.textContent = entradas.toLocaleString("pt-BR", {
+
+    totalEntrada.textContent = 
+    entradas.toLocaleString("pt-BR",{
 
         style:"currency",
 
@@ -265,13 +376,16 @@ function atualizarTela() {
 
 
 
-    totalSaida.textContent = saidas.toLocaleString("pt-BR", {
+
+    totalSaida.textContent = 
+    saidas.toLocaleString("pt-BR",{
 
         style:"currency",
 
         currency:"BRL"
 
     });
+
 
 
 }
@@ -279,7 +393,9 @@ function atualizarTela() {
 
 
 
-function excluirLancamento(id) {
+// ===== Excluir =====
+
+function excluirLancamento(id){
 
 
     const confirmar = confirm(
@@ -287,7 +403,8 @@ function excluirLancamento(id) {
     );
 
 
-    if (!confirmar) {
+
+    if(!confirmar){
 
         return;
 
@@ -295,7 +412,9 @@ function excluirLancamento(id) {
 
 
 
-    lancamentos = lancamentos.filter(item => item.id !== id);
+    lancamentos = lancamentos.filter(
+        item => item.id !== id
+    );
 
 
 
@@ -311,7 +430,9 @@ function excluirLancamento(id) {
 
 
 
-function salvarLocalStorage() {
+// ===== Salvar dados =====
+
+function salvarLocalStorage(){
 
     localStorage.setItem(
         "meuCaixa",
@@ -322,6 +443,6 @@ function salvarLocalStorage() {
 
 
 
-// ===== Inicialização =====
+// ===== Iniciar =====
 
 atualizarTela();
